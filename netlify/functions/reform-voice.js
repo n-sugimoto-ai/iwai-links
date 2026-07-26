@@ -14,7 +14,22 @@ exports.handler = async function () {
   try {
     const res = await fetch(GAS_URL, { redirect: "follow" });
     const contentType = res.headers.get("content-type") || "text/html; charset=utf-8";
-    const body = await res.text();
+    let body = await res.text();
+
+    // ページ内の相対パス(iframeやscriptのsrcなど)が、なほさんのNetlifyドメインではなく
+    // 本来のGoogle側のURLを見に行くように <base> タグを挿入する。
+    // これがないと、中身のiframeが「存在しない場所」を探しに行って空白になる。
+    if (contentType.includes("text/html")) {
+      const finalUrl = new URL(res.url);
+      const baseHref =
+        finalUrl.origin + finalUrl.pathname.substring(0, finalUrl.pathname.lastIndexOf("/") + 1);
+
+      if (/<head[^>]*>/i.test(body)) {
+        body = body.replace(/<head([^>]*)>/i, `<head$1><base href="${baseHref}">`);
+      } else {
+        body = `<base href="${baseHref}">` + body;
+      }
+    }
 
     return {
       statusCode: 200,
