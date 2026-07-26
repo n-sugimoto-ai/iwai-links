@@ -7,58 +7,111 @@
 <style>
   html, body {
     margin: 0;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    min-height: 100%;
     background: #fafafa;
     font-family: -apple-system, "Hiragino Sans", sans-serif;
   }
   .box {
     text-align: center;
-    padding: 32px;
-    max-width: 320px;
+    padding: 40px 24px;
+    max-width: 360px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 18px;
+    color: #222;
+    margin-bottom: 8px;
   }
   p {
-    font-size: 16px;
-    line-height: 1.7;
-    color: #333;
-    margin-bottom: 24px;
+    font-size: 15px;
+    line-height: 1.8;
+    color: #444;
   }
-  a.btn {
-    display: inline-block;
+  .steps {
+    text-align: left;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: 20px;
+  }
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .step:last-child { margin-bottom: 0; }
+  .num {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
     background: #2563eb;
     color: #fff;
-    text-decoration: none;
+    font-size: 13px;
     font-weight: bold;
-    padding: 14px 28px;
-    border-radius: 999px;
-    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .step-text { font-size: 14px; color: #333; line-height: 1.6; }
+  .highlight {
+    background: #fff3cd;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+  }
+  .icon {
+    display: inline-block;
+    font-size: 15px;
+    transform: scaleY(0.9);
+  }
+  #frameWrap { display: none; }
+  #frameWrap iframe {
+    width: 100%;
+    height: 100vh;
+    border: 0;
+    display: block;
   }
 </style>
 </head>
 <body>
-  <div class="box">
-    <p>お客様アンケート結果を表示します。<br>下のボタンをタップしてください。</p>
-    <a class="btn" id="openBtn" href="https://iwai-group-links.netlify.app/voice-test.html">
-      結果を見る
-    </a>
+
+  <div class="box" id="guide">
+    <h1>お客様アンケート結果</h1>
+    <p>この内容は、アプリ内のブラウザでは正しく表示できません。<br>お手数ですが、下の手順でブラウザアプリ(Safari / Chromeなど)で開いてください。</p>
+    <div class="steps">
+      <div class="step">
+        <div class="num">1</div>
+        <div class="step-text">右上の <span class="highlight">「・・・」</span> をクリック</div>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <div class="step-text">「<span class="icon">⬒</span>↗ 外部ブラウザーで開く」を選んでみてね</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="frameWrap">
+    <iframe id="voiceFrame" src=""></iframe>
   </div>
 
   <script>
-    // Instagram/Facebookなどアプリ内ブラウザからのアクセスを検知したら、
-    // 自動でSafari(外部ブラウザ)を開こうと試みる。
-    // x-safari-https:// は iOS がこのリンクを見た瞬間にSafariで開いてくれる特殊な書き方。
     var ua = navigator.userAgent || "";
     var isInApp = /Instagram|FBAN|FBAV|Line\//i.test(ua);
-    var targetUrl = "https://iwai-group-links.netlify.app/voice-test.html";
+    var baseUrl = "https://iwai-group-links.netlify.app/voice-test.html";
+    // キャッシュで古い集計結果が出続けないよう、毎回タイムスタンプを付けて最新版を取得する
+    var freshUrl = baseUrl + "?t=" + Date.now();
 
     if (isInApp) {
-      var safariUrl = targetUrl.replace(/^https:\/\//, "x-safari-https://");
-      document.getElementById("openBtn").setAttribute("href", safariUrl);
-
-      // ページを開いた瞬間に自動で1回試みる(ボタンタップなしでも遷移を試す)
-      window.location.href = safariUrl;
+      // アプリ内ブラウザ:案内(手順)を表示したままにする
+      document.getElementById("guide").style.display = "block";
+    } else {
+      // 通常のブラウザ(Safari/Chrome等):案内を隠して直接グラフを表示する
+      document.getElementById("guide").style.display = "none";
+      document.getElementById("frameWrap").style.display = "block";
+      document.getElementById("voiceFrame").src = freshUrl;
     }
   </script>
 </body>
