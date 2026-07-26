@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>お客様アンケート結果</title>
+<style>
+  html, body {
+    margin: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fafafa;
+    font-family: -apple-system, "Hiragino Sans", sans-serif;
+  }
+  .box {
+    text-align: center;
+    padding: 32px;
+    max-width: 320px;
+  }
+  p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #333;
+    margin-bottom: 24px;
+  }
+  a.btn {
+    display: inline-block;
+    background: #2563eb;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 14px 28px;
+    border-radius: 999px;
+    font-size: 16px;
+  }
+</style>
+</head>
+<body>
+  <div class="box">
+    <p>お客様アンケート結果を表示します。<br>下のボタンをタップしてください。</p>
+    <a class="btn" id="openBtn" href="https://iwai-group-links.netlify.app/voice-test.html">
+      結果を見る
+    </a>
+  </div>
+
+  <script>
+    // Instagram/Facebookなどアプリ内ブラウザからのアクセスを検知したら、
+    // 自動でSafari(外部ブラウザ)を開こうと試みる。
+    // x-safari-https:// は iOS がこのリンクを見た瞬間にSafariで開いてくれる特殊な書き方。
+    var ua = navigator.userAgent || "";
+    var isInApp = /Instagram|FBAN|FBAV|Line\//i.test(ua);
+    var targetUrl = "https://iwai-group-links.netlify.app/voice-test.html";
+
+    if (isInApp) {
+      var safariUrl = targetUrl.replace(/^https:\/\//, "x-safari-https://");
+      document.getElementById("openBtn").setAttribute("href", safariUrl);
+
+      // ページを開いた瞬間に自動で1回試みる(ボタンタップなしでも遷移を試す)
+      window.location.href = safariUrl;
+    }
+  </script>
+</body>
+</html>
